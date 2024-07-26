@@ -1,0 +1,29 @@
+/* Custom scrollbar for WebKit browsers */
+.custom-textarea {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #9e9e9e #f0f0f0; /* For Firefox */
+}
+
+/* WebKit browsers */
+.custom-textarea::-webkit-scrollbar {
+  width: 12px; /* Width of the vertical scrollbar */
+  height: 12px; /* Height of the horizontal scrollbar (if applicable) */
+}
+
+.custom-textarea::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Track color */
+  border-radius: 12px; /* Rounded edges of the track */
+}
+
+.custom-textarea::-webkit-scrollbar-thumb {
+  background: #9e9e9e; /* Scrollbar color */
+  border-radius: 12px; /* Rounded edges of the thumb */
+}
+
+.custom-textarea::-webkit-scrollbar-thumb:hover {
+  background: #7e7e7e; /* Darker color on hover */
+}
+
+.custom-textarea::-webkit-scrollbar-button {
+  display: none; /* Hide scrollbar buttons (arrows) */
+}
