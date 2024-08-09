@@ -6,6 +6,7 @@ import Textbox from "@/components/Textbox";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import LoadingSpinner from "@/components/LoadingSpinner"; // Import the spinner component
 
 function Text2Speech() {
   const { push } = useRouter();
@@ -14,7 +15,9 @@ function Text2Speech() {
     voice: "Voice: Reporter A",
     video: "",
   });
-  const [videofile, setVideofile] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
+
   const handleInput = (e: any) => {
     const fieldName = e.target.name;
     const fieldValue = e.target.value;
@@ -26,9 +29,45 @@ function Text2Speech() {
   };
 
   const onSubmit = async (e: any) => {
-    //prevent from refresh when submit
     e.preventDefault();
-    push("/Text2Speech/result");
+    setIsLoading(true);
+    setErrorMessage(""); // Reset error message
+
+    const formDataToSend = new FormData();
+    formDataToSend.append(
+      "text",
+      new Blob([formData.textinput], { type: "text/plain" }),
+      "textfile.txt"
+    );
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}text2lip`,
+        {
+          method: "POST",
+          body: formDataToSend,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse JSON response for detailed error message
+        console.error("Error response data:", errorData);
+        throw new Error(errorData.message || "Network response was not ok");
+      }
+
+      const result = await response.json();
+      if (result.task_id) {
+        // Redirect to result page with task_id in the query parameters
+        push(`/Text2Speech/result?task_id=${result.task_id}`);
+      } else {
+        setErrorMessage("Task ID not found in response.");
+      }
+    } catch (error) {
+      console.error("Error during API call:", error);
+      setErrorMessage(`Something went wrong. Please try again.`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -54,6 +93,8 @@ function Text2Speech() {
             ]}
             handleInput={handleInput}
           />
+          {isLoading && <LoadingSpinner />} {/* Show spinner when loading */}
+          {errorMessage && <div className="text-red-500">{errorMessage}</div>}
           <input
             type="submit"
             value="submit"
@@ -64,4 +105,5 @@ function Text2Speech() {
     </ThemeProvider>
   );
 }
+
 export default Text2Speech;

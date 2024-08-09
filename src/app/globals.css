@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --palette1: #A7A5C6;
+  --palette1: #a7a5c6;
   --palette1-select: #858498;
-  --palette2: #5D707F;
+  --palette2: #5d707f;
   --text-color-1: #212128;
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -13,9 +13,9 @@
 }
 
 .dark {
-  --palette1: #A7A5C6;
+  --palette1: #a7a5c6;
   --palette1-select: #858498;
-  --palette2: #5D707F;
+  --palette2: #5d707f;
   --text-color-1: #212128;
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 0, 0, 0;
@@ -29,12 +29,33 @@ body {
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
-    ) */
-    rgb(var(--background-start-rgb));
+    ) */ rgb(
+    var(--background-start-rgb)
+  );
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* Pulse animation */
+.pulse {
+  animation: pulse-animation 0.5s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
