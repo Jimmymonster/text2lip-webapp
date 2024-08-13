@@ -39,7 +39,7 @@ function ResultPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}text2lip/status?task_id=${taskId}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip/status?task_id=${taskId}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

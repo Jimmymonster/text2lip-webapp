@@ -42,7 +42,7 @@ function Text2Speech() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}text2lip`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip`,
         {
           method: "POST",
           body: formDataToSend,

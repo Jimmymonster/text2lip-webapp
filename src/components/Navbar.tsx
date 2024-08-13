@@ -16,7 +16,7 @@ function Navbar() {
     };
 
     return (
-        <div className="px-[5%] sticky top-0 bg-[color:var(--palette1)] font-bold">
+        <div className="z-50 px-[5%] sticky top-0 bg-[color:var(--palette1)] font-bold">
             <nav>
                 {/* > md*/}
                 <div className="hidden h-16 md:flex justify-between items-center">
