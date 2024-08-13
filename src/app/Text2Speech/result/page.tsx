@@ -46,7 +46,7 @@ function ResultPage() {
       }
 
       const result = await response.json();
-      setStatus(result.status);
+      setStatus(result.status);      
 
       if (result.status === "finish") {
         fetchAudio(taskId);
@@ -64,7 +64,7 @@ function ResultPage() {
   const fetchAudio = async (taskId: string) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}text2lip/get_voice?task_id=${taskId}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip/get_voice?task_id=${taskId}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch audio");
@@ -76,15 +76,21 @@ function ResultPage() {
 
       const audioElement = new Audio(audioUrl);
       setAudio(audioElement);
-
-      // Set up event listener to update the timer
+      
+      // Wait for the metadata to be loaded before setting up timeupdate event
+    audioElement.addEventListener("loadedmetadata", () => {
+      setTimer({
+        currentTime: audioElement.currentTime,
+        duration: audioElement.duration,
+      });
+      
       audioElement.addEventListener("timeupdate", () => {
         setTimer({
           currentTime: audioElement.currentTime,
           duration: audioElement.duration,
         });
       });
-
+    });
       // Clean up the URL object when the component is unmounted
       return () => URL.revokeObjectURL(audioUrl);
     } catch (error) {
@@ -101,13 +107,23 @@ function ResultPage() {
       }
     }
   };
+  const handleDownloadAudio = () => {
+    if (audioUrl) {
+      const link = document.createElement('a');
+      link.href = audioUrl;
+      link.download = 'voice.mp3'; // You can set the filename to whatever you prefer
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
 
   return (
     <ThemeProvider>
       <Navbar />
-      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)]">
-        {isLoading ? (
-          <div className="flex flex-col w-[80%] h-[60%] min-h-52 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
+      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-96">
+        {isLoading || !audioUrl ? (
+          <div className="flex flex-col w-[80%] h-[60%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
             <div className="flex flex-col justify-center items-center">
               <svg
                 width="64"
@@ -126,7 +142,7 @@ function ResultPage() {
             </div>
           </div>
         ) : status === "error" ? (
-          <div className="flex flex-col w-[80%] h-[60%] min-h-52 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
+          <div className="flex flex-col w-[80%] h-[60%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
             <div className="flex flex-col justify-center items-center">
               <p className="text-red-500 text-lg">{errorMessage}</p>
               <Link
@@ -138,7 +154,7 @@ function ResultPage() {
             </div>
           </div>
         ) : status === "finish" && audioUrl ? (
-          <div className="flex flex-col w-[80%] h-[60%] min-h-52 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
+          <div className="flex flex-col w-[80%] h-[60%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-4">
             <div className="flex flex-col justify-center items-center">
               <div
                 className={` ${audio?.paused ? "" : "pulse"}`}
@@ -196,12 +212,12 @@ function ResultPage() {
               )}
             </div>
             <div className="flex flex-row justify-evenly w-full h-16">
-              <Link
-                href="/Text2Speech"
+              <div
+              onClick={handleDownloadAudio}
                 className="mt-4 transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-white hover:bg-slate-100 text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
               >
                 Export Voice
-              </Link>
+              </div>
               <Link
                 href="/Text2Speech"
                 className="mt-4 transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-white hover:bg-slate-100 text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
