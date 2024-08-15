@@ -34,13 +34,13 @@ function Text2Lip() {
   return (
     <ThemeProvider>
       <Navbar />
-      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)]">
+      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-96">
         <form
-          className="flex flex-col w-[80%] h-[60%] min-h-52 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3"
+          className="flex flex-col w-[80%] h-[80%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3"
           onSubmit={onSubmit}
         >
-          <div className="flex flex-row w-full h-full gap-3">
-            <div className="flex flex-col w-full h-full min-h-52 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
+          <div className="flex flex-row w-full h-full min-h-80 gap-3">
+            <div className="flex flex-col w-full h-full min-h-72 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
               <Textbox
                 textName="textinput"
                 textValue={formData.textinput}
@@ -57,7 +57,7 @@ function Text2Lip() {
                 handleInput={handleInput}
               />
             </div>
-            <div className="flex flex-col w-full h-full min-h-52 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
+            <div className="flex flex-col w-full h-full min-h-72 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
               <Videobox />
               <Dropdown
                 name="voice"

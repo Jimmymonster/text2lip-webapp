@@ -16,8 +16,8 @@ function Navbar() {
     };
 
     return (
-        <div className="z-50 px-[5%] sticky top-0 bg-[color:var(--palette1)] font-bold">
-            <nav>
+        <div className="w-full h-16">
+            <nav className="w-full h-16 z-50 px-[5%] sticky top-0 bg-[color:var(--palette1)] font-bold">
                 {/* > md*/}
                 <div className="hidden h-16 md:flex justify-between items-center">
                     <div className="flex grow-[1] items-center justifiy-center uppercase pr-3 py-3 h-full">
@@ -103,6 +103,7 @@ function Navbar() {
 
                 </div>
             </nav>
+            {/* <div className="w-full h-16 z-50"></div> */}
         </div>
     )
 }

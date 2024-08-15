@@ -123,7 +123,7 @@ function ResultPage() {
       <Navbar />
       <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-96">
         {isLoading || !audioUrl ? (
-          <div className="flex flex-col w-[80%] h-[60%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
+          <div className="flex flex-col w-[80%] h-[80%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
             <div className="flex flex-col justify-center items-center">
               <svg
                 width="64"

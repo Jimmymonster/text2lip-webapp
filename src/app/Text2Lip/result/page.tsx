@@ -10,8 +10,8 @@ function result() {
   return (
     <ThemeProvider>
       <Navbar />
-      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)]">
-        <div className="flex flex-col w-[80%] h-[60%] min-h-52 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3">
+      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-96">
+        <div className="flex flex-col w-[80%] h-[80%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3">
           <VideoUploadResult />
           <div className="flex flex-row justify-evenly w-full h-16">
             <div className="transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-white hover:bg-slate-100 text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center">

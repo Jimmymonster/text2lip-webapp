@@ -73,9 +73,9 @@ function Text2Speech() {
   return (
     <ThemeProvider>
       <Navbar />
-      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)]">
+      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-80">
         <form
-          className="flex flex-col w-[80%] h-[60%] min-h-52 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3"
+          className="flex flex-col w-[80%] h-[80%] min-h-80 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3"
           onSubmit={onSubmit}
         >
           <Textbox
