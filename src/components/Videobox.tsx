@@ -1,12 +1,22 @@
 import React, { useState, DragEvent } from "react";
 
-function VideoUpload() {
+interface VideoUploadProps {
+  onFileChange: (file: File | null) => void; // Callback prop for sending the file to the parent
+}
+
+function VideoBox({ onFileChange }: VideoUploadProps) {
   const [isDragging, setIsDragging] = useState(false); // State to track dragging
   const [videoSrc, setVideoSrc] = useState<string | null>(null); // State to hold video URL
 
   const handleFileChange = (file: File) => {
-    const videoUrl = URL.createObjectURL(file);
-    setVideoSrc(videoUrl); // Set video URL for preview
+    if (file.type === "video/mp4") {
+      // Only accept .mp4 files
+      const videoUrl = URL.createObjectURL(file);
+      setVideoSrc(videoUrl); // Set video URL for preview
+      onFileChange(file); // Send the file to the parent component
+    } else {
+      alert("Only .mp4 files are accepted.");
+    }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,6 +48,7 @@ function VideoUpload() {
 
   const handleRemoveVideo = () => {
     setVideoSrc(null); // Clear video source to hide the video and show the upload button
+    onFileChange(null); // Notify parent that the video was removed
   };
 
   return (
@@ -56,7 +67,7 @@ function VideoUpload() {
           <label className="absolute inset-0 flex items-center justify-center z-10 bg-slate-50 p-2 rounded-xl text-[color:var(--text-color-1)] cursor-pointer pointer-events-auto">
             <input
               type="file"
-              accept="video/*"
+              accept="video/mp4"
               onChange={handleFileUpload}
               className="hidden"
             />
@@ -97,4 +108,4 @@ function VideoUpload() {
   );
 }
 
-export default VideoUpload;
+export default VideoBox;

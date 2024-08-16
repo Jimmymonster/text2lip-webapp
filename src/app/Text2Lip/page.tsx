@@ -15,8 +15,19 @@ function Text2Lip() {
     voice: "Voice: Reporter A",
     video: "",
   });
-  const [videofile, setVideofile] = useState<File[]>([]);
-  const handleInput = (e: any) => {
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
+
+  const handleFileChange = (file: File | null) => {
+    setVideoFile(file); // Update the state with the selected file
+  };
+
+  const handleInput = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const fieldName = e.target.name;
     const fieldValue = e.target.value;
 
@@ -26,10 +37,53 @@ function Text2Lip() {
     }));
   };
 
-  const onSubmit = async (e: any) => {
-    //prevent from refresh when submit
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    push("/Text2Lip/result");
+    setIsLoading(true);
+    setErrorMessage(""); // Reset error message
+
+    if (!videoFile) {
+      setErrorMessage("Please upload a video file.");
+      setIsLoading(false);
+      return;
+    }
+
+    const formDataToSend = new FormData();
+    formDataToSend.append(
+      "text",
+      new Blob([formData.textinput], { type: "text/plain" }),
+      "textfile.txt"
+    );
+    formDataToSend.append("video", videoFile);
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip`,
+        {
+          method: "POST",
+          body: formDataToSend,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse JSON response for detailed error message
+        console.error("Error response data:", errorData);
+        throw new Error(errorData.message || "Network response was not ok");
+      }
+
+      const result = await response.json();
+      if (result.task_id) {
+        // Redirect to result page with task_id in the query parameters
+        push(`/Text2Lip/result?task_id=${result.task_id}`);
+      } else {
+        setErrorMessage("Task ID not found in response.");
+      }
+    } catch (error) {
+      console.error("Error during API call:", error);
+      setErrorMessage("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <ThemeProvider>
@@ -58,10 +112,10 @@ function Text2Lip() {
               />
             </div>
             <div className="flex flex-col w-full h-full min-h-72 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
-              <Videobox />
+              <Videobox onFileChange={handleFileChange} />
               <Dropdown
                 name="voice"
-                value={formData.voice}
+                value={formData.video}
                 dropdownList={["Video: Upload"]}
                 handleInput={handleInput}
               />
