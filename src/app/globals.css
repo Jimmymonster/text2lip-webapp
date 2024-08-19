@@ -7,18 +7,22 @@
   --palette1-select: #858498;
   --palette2: #5d707f;
   --text-color-1: #212128;
+  --bg-box-col: #edf2f3;
+  --bg-box-hover-col: #cdd3d4;
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 }
 
 .dark {
-  --palette1: #a7a5c6;
+  --palette1: #6d6b86;
   --palette1-select: #858498;
   --palette2: #5d707f;
-  --text-color-1: #212128;
+  --text-color-1: #d7d7dd;
+  --bg-box-col: #606072;
+  --bg-box-hover-col: #84849c;
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
+  --background-start-rgb: 80, 80, 80;
   --background-end-rgb: 0, 0, 0;
 }
 

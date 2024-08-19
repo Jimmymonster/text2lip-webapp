@@ -3,7 +3,6 @@
 import Dropdown from "@/components/Dropdown";
 import Navbar from "@/components/Navbar";
 import Textbox from "@/components/Textbox";
-import { ThemeProvider } from "@/context/ThemeContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner"; // Import the spinner component
@@ -71,7 +70,7 @@ function Text2Speech() {
   };
 
   return (
-    <ThemeProvider>
+    <div>
       <Navbar />
       <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-80">
         <form
@@ -98,11 +97,11 @@ function Text2Speech() {
           <input
             type="submit"
             value="submit"
-            className="transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-white hover:bg-slate-100 text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12"
+            className="transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-[color:var(--bg-box-col)] hover:bg-[color:var(--bg-box-hover-col)] text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12"
           />
         </form>
       </div>
-    </ThemeProvider>
+    </div>
   );
 }
 

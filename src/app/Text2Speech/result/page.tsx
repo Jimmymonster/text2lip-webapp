@@ -1,7 +1,6 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import { ThemeProvider } from "@/context/ThemeContext";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
@@ -46,7 +45,7 @@ function ResultPage() {
       }
 
       const result = await response.json();
-      setStatus(result.status);      
+      setStatus(result.status);
 
       if (result.status === "finish") {
         fetchAudio(taskId);
@@ -76,21 +75,21 @@ function ResultPage() {
 
       const audioElement = new Audio(audioUrl);
       setAudio(audioElement);
-      
+
       // Wait for the metadata to be loaded before setting up timeupdate event
-    audioElement.addEventListener("loadedmetadata", () => {
-      setTimer({
-        currentTime: audioElement.currentTime,
-        duration: audioElement.duration,
-      });
-      
-      audioElement.addEventListener("timeupdate", () => {
+      audioElement.addEventListener("loadedmetadata", () => {
         setTimer({
           currentTime: audioElement.currentTime,
           duration: audioElement.duration,
         });
+
+        audioElement.addEventListener("timeupdate", () => {
+          setTimer({
+            currentTime: audioElement.currentTime,
+            duration: audioElement.duration,
+          });
+        });
       });
-    });
       // Clean up the URL object when the component is unmounted
       return () => URL.revokeObjectURL(audioUrl);
     } catch (error) {
@@ -119,10 +118,10 @@ function ResultPage() {
   };
 
   return (
-    <ThemeProvider>
+    <div>
       <Navbar />
       <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-96">
-        {isLoading || !audioUrl ? (
+        {isLoading ? (
           <div className="flex flex-col w-[80%] h-[80%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
             <div className="flex flex-col justify-center items-center">
               <svg
@@ -147,7 +146,7 @@ function ResultPage() {
               <p className="text-red-500 text-lg">{errorMessage}</p>
               <Link
                 href="/Text2Speech"
-                className="mt-4 transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-white hover:bg-slate-100 text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
+                className="mt-4 transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-[color:var(--bg-box-col)] hover:bg-[color:var(--bg-box-hover-col)] text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
               >
                 Back to Input
               </Link>
@@ -213,14 +212,14 @@ function ResultPage() {
             </div>
             <div className="flex flex-row justify-evenly w-full h-16">
               <div
-              onClick={handleDownloadAudio}
-                className="mt-4 transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-white hover:bg-slate-100 text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
+                onClick={handleDownloadAudio}
+                className="mt-4 transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-[color:var(--bg-box-col)] hover:bg-[color:var(--bg-box-hover-col)] text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
               >
                 Export Voice
               </div>
               <Link
                 href="/Text2Speech"
-                className="mt-4 transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-white hover:bg-slate-100 text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
+                className="mt-4 transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-[color:var(--bg-box-col)] hover:bg-[color:var(--bg-box-hover-col)] text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
               >
                 Back to Input
               </Link>
@@ -232,7 +231,7 @@ function ResultPage() {
           </div>
         )}
       </div>
-    </ThemeProvider>
+    </div>
   );
 }
 

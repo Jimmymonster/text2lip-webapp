@@ -67,17 +67,17 @@ function Textbox({
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
-            className={`custom-textarea block w-full h-full p-3 text-sm border border-slate-400 rounded-xl bg-slate-50 resize-none pointer-events-none${
+            className={`custom-textarea block w-full h-full p-3 text-sm border border-[color:var(--bg-box-hover-col)] rounded-xl bg-[color:var(--bg-box-col)] resize-none pointer-events-none${
               isDragging
-                ? "border-blue-500 bg-slate-200"
-                : "border-slate-300 bg-slate-50"
+                ? "border-blue-500 bg-[color:var(--bg-box-hover-col)]"
+                : "border-slate-500 bg-[color:var(--bg-box-col)]"
             }`}
             style={{ userSelect: "none" }}
             required
           ></textarea>
           {textValue.trim() === "" && (
             <label className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-              <span className="bg-slate-50 p-2 rounded text-[color:var(--text-color-1)] cursor-pointer pointer-events-auto">
+              <span className="bg-[color:var(--bg-box-col)] p-2 rounded text-[color:var(--text-color-1)] cursor-pointer pointer-events-auto">
                 <input
                   type="file"
                   accept=".txt"
@@ -91,11 +91,12 @@ function Textbox({
                     height="25"
                     viewBox="0 0 25 25"
                     fill="none"
+                    className="fill-[color:var(--text-color-1)]"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
                       d="M5.75 20.5H19.75V18.5H5.75V20.5ZM5.75 10.5H9.75V16.5H15.75V10.5H19.75L12.75 3.5L5.75 10.5Z"
-                      fill="black"
+                      fill=""
                     />
                   </svg>
                   Upload text file
