@@ -113,7 +113,7 @@ function Text2Lip() {
             <div className="flex flex-col w-full h-full min-h-72 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
               <Videobox onFileChange={handleFileChange} />
               <Dropdown
-                name="voice"
+                name="video"
                 value={formData.video}
                 dropdownList={["Video: Upload"]}
                 handleInput={handleInput}
@@ -124,7 +124,7 @@ function Text2Lip() {
           <input
             type="submit"
             value="submit"
-            className="transition ease-in-out delay-150 duration-200 hover:scale-105 cursor-pointer bg-[color:var(--bg-box-col)] hover:bg-[color:var(--bg-box-hover-col)] text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12"
+            className="transition ease-in-out duration-200 hover:scale-105 cursor-pointer bg-[color:var(--bg-box-col)] hover:bg-[color:var(--bg-box-hover-col)] text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12"
           />
         </form>
       </div>

@@ -54,10 +54,10 @@ function VideoBox({ onFileChange }: VideoUploadProps) {
   return (
     <div className="w-full h-full relative">
       <div
-        className={`flex items-center justify-center rounded-xl w-full h-full border border-dashed ${
+        className={`flex items-center justify-center rounded-xl w-full h-full border border-[color:var(--bg-box-hover-col)] ${
           isDragging
-            ? "border-blue-500 bg-slate-200"
-            : "border-slate-300 bg-slate-50"
+            ? "border-blue-500 bg-[color:var(--bg-box-hover-col)]"
+            : "border-slate-500 bg-[color:var(--bg-box-col)]"
         }`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
