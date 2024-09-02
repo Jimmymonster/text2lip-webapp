@@ -47,8 +47,17 @@ function ResultPage() {
       if (result.status === "finish") {
         fetchVideo(taskId);
         fetchVoice(taskId);
-      } else if (result.status !== "error") {
+      } else if (result.status === "processing") {
         setTimeout(() => fetchTaskStatus(taskId), 10000); // Poll every 10 seconds
+      }
+      else{
+        setStatus("error");
+        if(result.status === "error No face"){
+          setErrorMessage("Face not detected in input video.");
+        }
+        else{
+          setErrorMessage("Something went wrong. Please try again.");
+        }
       }
     } catch (error) {
       setStatus("error");
@@ -160,12 +169,12 @@ function ResultPage() {
             </div>
           ) : status === "finish" && videoUrl ? (
             <div className="flex flex-col w-[80%] h-[60%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-4">
-              <div className="flex flex-col w-full h-full min-h-96">
+              <div className="flex flex-col w-full h-full min-h-72">
                 <video
                   controls
                   // ref={videoRef}
                   src={videoUrl}
-                  className="w-full h-full "
+                  className="w-full h-full rounded-xl"
                 />
               </div>
 
@@ -184,7 +193,7 @@ function ResultPage() {
                 </button>
                 <Link
                   key="backtoinput"
-                  href={"/Text2Speech"}
+                  href={"/Text2Lip"}
                   className="transition ease-in-out duration-200 hover:scale-105 cursor-pointer bg-[color:var(--bg-box-col)] hover:bg-[color:var(--bg-box-hover-col)] text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
                 >
                   Back to Input

@@ -6,13 +6,14 @@ import Textbox from "@/components/Textbox";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Videobox from "@/components/Videobox";
+import Image from 'next/image'
 
 function Text2Lip() {
   const { push } = useRouter();
   const [formData, setFormData] = useState({
     textinput: "",
     voice: "Voice: Reporter A",
-    video: "",
+    video: "Video: Default",
   });
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +42,7 @@ function Text2Lip() {
     setIsLoading(true);
     setErrorMessage(""); // Reset error message
 
-    if (!videoFile) {
+    if (!videoFile && formData.video!=="Video: Default") {
       setErrorMessage("Please upload a video file.");
       setIsLoading(false);
       return;
@@ -53,11 +54,15 @@ function Text2Lip() {
       new Blob([formData.textinput], { type: "text/plain" }),
       "textfile.txt"
     );
-    formDataToSend.append("video", videoFile);
-
+    if(videoFile && formData.video!=="Video: Default"){
+      formDataToSend.append("video", videoFile);
+    }
+    const queryParams = new URLSearchParams({
+      useDefaultVideo: (formData.video === "Video: Default").toString(),
+    });
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip?${queryParams.toString()}`,
         {
           method: "POST",
           body: formDataToSend,
@@ -131,16 +136,22 @@ function Text2Lip() {
                 />
               </div>
               <div className="flex flex-col w-full h-full min-h-72 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
-                <Videobox onFileChange={handleFileChange} />
+               { formData.video==="Video: Default"?(<Image
+        src="/default_video.png"
+        alt="default video image for text to lip inference"
+        width={500}
+        height={300}
+        className="rounded-xl w-full h-full"
+      />):(<Videobox onFileChange={handleFileChange} />)}
                 <Dropdown
                   name="video"
                   value={formData.video}
-                  dropdownList={["Video: Upload"]}
+                  dropdownList={["Video: Default","Video: Upload"]}
                   handleInput={handleInput}
                 />
               </div>
             </div>
-
+            {errorMessage && <div className="text-red-500">{errorMessage}</div>}
             <input
               type="submit"
               value="submit"
