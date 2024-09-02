@@ -60,6 +60,8 @@ function Text2Lip() {
     const queryParams = new URLSearchParams({
       useDefaultVideo: (formData.video === "Video: Default").toString(),
     });
+    queryParams.append("voice", formData.voice.slice(7));
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip?${queryParams.toString()}`,

@@ -31,7 +31,14 @@ function ResultPage() {
     setTaskId(taskIdFromQuery);
     fetchTaskStatus(taskIdFromQuery);
   }, [searchParams, router]);
-
+  useEffect(() => {
+    return () => {
+      if(audio){
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
+  },[]);
   const fetchTaskStatus = async (taskId: string) => {
     setIsLoading(true);
     setErrorMessage(null);
@@ -106,6 +113,12 @@ function ResultPage() {
       }
     }
   };
+  const handlePauseAudio = () =>{
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }
   const handleDownloadAudio = () => {
     if (audioUrl) {
       const link = document.createElement("a");
@@ -198,6 +211,7 @@ function ResultPage() {
                   Export Voice
                 </div>
                 <Link
+                  onClick={handlePauseAudio}
                   href="/Text2Speech"
                   className="mt-4 transition ease-in-out duration-200 hover:scale-105 cursor-pointer bg-[color:var(--bg-box-col)] hover:bg-[color:var(--bg-box-hover-col)] text-[color:var(--text-color-1)] uppercase font-semibold rounded-full w-36 h-12 flex justify-center items-center"
                 >
