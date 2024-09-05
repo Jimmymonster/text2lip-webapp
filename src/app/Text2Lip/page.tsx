@@ -126,7 +126,8 @@ function Text2Lip() {
                   textValue={formData.textinput}
                   handleInput={handleInput}
                 />
-                <Dropdown
+                <div className="flex flex-row w-full h-fit gap-3">
+<Dropdown
                   name="voice"
                   value={formData.voice}
                   dropdownList={[
@@ -136,6 +137,8 @@ function Text2Lip() {
                   ]}
                   handleInput={handleInput}
                 />
+                </div>
+                
               </div>
               <div className="flex flex-col w-full h-full min-h-72 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
                { formData.video==="Video: Default"?(<Image
@@ -145,12 +148,15 @@ function Text2Lip() {
         height={300}
         className="rounded-xl w-full h-full"
       />):(<Videobox onFileChange={handleFileChange} />)}
-                <Dropdown
+      <div className="flex flex-row w-full h-fit gap-3">
+      <Dropdown
                   name="video"
                   value={formData.video}
                   dropdownList={["Video: Default","Video: Upload"]}
                   handleInput={handleInput}
                 />
+      </div>
+                
               </div>
             </div>
             {errorMessage && <div className="text-red-500">{errorMessage}</div>}
