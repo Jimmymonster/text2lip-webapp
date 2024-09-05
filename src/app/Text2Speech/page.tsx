@@ -6,11 +6,14 @@ import Textbox from "@/components/Textbox";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner"; // Import the spinner component
+import Textboxline from "@/components/Inputnumber";
+import Inputnumber from "@/components/Inputnumber";
 
 function Text2Speech() {
   const { push } = useRouter();
   const [formData, setFormData] = useState({
     textinput: "",
+    pitch: "0",
     voice: "Voice: Reporter A",
     video: "",
   });
@@ -83,6 +86,7 @@ function Text2Speech() {
             textValue={formData.textinput}
             handleInput={handleInput}
           />
+          <div className="flex flex-row w-full h-fit gap-3">
           <Dropdown
             name="voice"
             value={formData.voice}
@@ -93,6 +97,17 @@ function Text2Speech() {
             ]}
             handleInput={handleInput}
           />
+          <Inputnumber
+          textName="pitch"
+          textValue={formData.pitch}
+          handleInput={handleInput}
+          max="12"
+          min="-12"
+          step="1"
+          />
+          </div>
+          
+          
           {isLoading && <LoadingSpinner />} {/* Show spinner when loading */}
           {errorMessage && <div className="text-red-500">{errorMessage}</div>}
           <input

@@ -16,7 +16,7 @@ function Home() {
             <div className="text-base sm:text-xl h-fit"> - เลือกเสียง และกด submit</div>
             <div className="text-lg sm:text-2xl h-fit"> Text to Lip</div>
             <div className="text-base sm:text-xl h-fit"> - คัดลอกบทความ อัพโหลดไฟล์ หรือพิมพ์ด้วยตัวเอง มาใส่ในช่องข้อความ</div>
-            <div className="text-base sm:text-xl h-fit"> - อัพโหลด video mp4 ที่มีหน้าคน (และหน้าต้องไม่ใช่ตัวการ์ตูนมากเกินไป)</div>
+            <div className="text-base sm:text-xl h-fit"> - อัพโหลด video mp4 ที่มีหน้าคน</div>
             <div className="text-base sm:text-xl h-fit"> - เลือกเสียง และกด submit</div>
           </div>
         </div>
