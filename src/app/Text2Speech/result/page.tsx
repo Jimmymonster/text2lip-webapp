@@ -56,8 +56,12 @@ function ResultPage() {
 
       if (result.status === "finish") {
         fetchAudio(taskId);
-      } else if (result.status !== "error") {
+      } else if (result.status === "processing") {
         setTimeout(() => fetchTaskStatus(taskId), 2000); // Poll every 2 seconds
+      }
+      else{
+        setStatus("error");
+        setErrorMessage("Error on Server side. Please try again.");
       }
     } catch (error) {
       setStatus("error");
