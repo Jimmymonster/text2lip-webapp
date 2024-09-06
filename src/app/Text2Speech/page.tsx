@@ -86,9 +86,9 @@ function Text2Speech() {
   return (
     <div>
       <Navbar />
-      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-80">
+      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-[450px]">
         <form
-          className="flex flex-col w-[80%] h-[80%] min-w-[600px] min-h-80 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3"
+          className="flex flex-col w-[80%] h-[80%] min-h-[450px] justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3"
           onSubmit={onSubmit}
         >
           <Textbox
@@ -108,7 +108,7 @@ function Text2Speech() {
             handleInput={handleInput}
           />
            </div>
-          <div className="flex flex-row w-full h-fit gap-3">
+          <div className="grid grid-rows-6 sm:grid-rows-3 md:grid-rows-2 grid-flow-col w-full h-fit gap-2">
           <Inputnumber
           textName="pitch_octave"
           textValue={formData.pitch_octave}
@@ -136,8 +136,6 @@ function Text2Speech() {
           step="0.01"
           description="Adjust the volume envelope scaling. Closer to 0, the more it mimicks the original vocals. Closer to 1 can mask some noise but will be more of consistently loud volume. value is 0 to 1"
           />
-          </div>
-          <div className="flex flex-row w-full h-fit gap-3">
           <Inputnumber
           textName="protect"
           textValue={formData.protect}
