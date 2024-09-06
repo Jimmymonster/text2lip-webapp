@@ -7,17 +7,27 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Videobox from "@/components/Videobox";
 import Image from 'next/image'
+import Inputnumber from "@/components/Inputnumber";
+import ProgressBar from "@/components/Progressbar";
 
 function Text2Lip() {
   const { push } = useRouter();
   const [formData, setFormData] = useState({
     textinput: "",
+    pitch_octave: "0",
+    index_rate: "0.75",
+    filter_radius: "3",
+    resample_sr: "0", // 0 is no resampling
+    rms_mix_rate: "0.25",
+    protect: "0.33",
     voice: "Voice: Reporter A",
     video: "Video: Default",
   });
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // State for error message
+
+  const [progressState,setProgressState] = useState<[number,number,string]>([0,6,'uploading your text and video input to server']);
 
   const handleFileChange = (file: File | null) => {
     setVideoFile(file); // Update the state with the selected file
@@ -61,6 +71,12 @@ function Text2Lip() {
       useDefaultVideo: (formData.video === "Video: Default").toString(),
     });
     queryParams.append("voice", formData.voice.slice(7));
+    queryParams.append("pitch_octave", formData.pitch_octave);
+    queryParams.append("index_rate", formData.index_rate);
+    queryParams.append("filter_radius", formData.filter_radius);
+    queryParams.append("resample_sr", formData.resample_sr);
+    queryParams.append("rms_mix_rate", formData.rms_mix_rate);
+    queryParams.append("protect", formData.protect);
 
     try {
       const response = await fetch(
@@ -111,16 +127,16 @@ function Text2Lip() {
                   fill="white"
                 />
               </svg>
-              <p className="text-white text-lg mt-4">Loading...</p>
+              <ProgressBar nowStep={progressState[0]} maxStep={progressState[1]} description={progressState[2]}/>
             </div>
           </div>
         ) : (
           <form
-            className="flex flex-col w-[80%] h-[80%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3"
+            className="flex flex-col w-[80%] h-[80%] min-w-[600px] min-h-[500px] justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3"
             onSubmit={onSubmit}
           >
-            <div className="flex flex-row w-full h-full min-h-80 gap-3">
-              <div className="flex flex-col w-full h-full min-h-72 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
+            <div className="flex flex-row w-full h-full min-h-fit gap-3">
+              <div className="flex flex-col w-full h-full min-h-fit justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
                 <Textbox
                   textName="textinput"
                   textValue={formData.textinput}
@@ -139,8 +155,9 @@ function Text2Lip() {
                 />
                 </div>
                 
+                
               </div>
-              <div className="flex flex-col w-full h-full min-h-72 justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
+              <div className="flex flex-col w-full h-full min-h-fit justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
                { formData.video==="Video: Default"?(<Image
         src="/default_video.png"
         alt="default video image for text to lip inference"
@@ -158,7 +175,67 @@ function Text2Lip() {
       </div>
                 
               </div>
+              
             </div>
+            <div className="flex flex-row w-full h-fit gap-3">
+          <Inputnumber
+          textName="pitch_octave"
+          textValue={formData.pitch_octave}
+          handleInput={handleInput}
+          max="12"
+          min="-12"
+          step="1"
+          description="Change voice pitch. Input number of semitones. Higher for female like, lower for male like. value is -12 to 12"
+          />
+          <Inputnumber
+          textName="resample_sr"
+          textValue={formData.resample_sr}
+          handleInput={handleInput}
+          max="48000"
+          min="0"
+          step="1"
+          description="Resampling sample rate of voice. 0 for no resampling. value is 0 to 48000"
+          />
+          <Inputnumber
+          textName="rms_mix_rate"
+          textValue={formData.rms_mix_rate}
+          handleInput={handleInput}
+          max="1"
+          min="0"
+          step="0.01"
+          description="Adjust the volume envelope scaling. Closer to 0, the more it mimicks the original vocals. Closer to 1 can mask some noise but will be more of consistently loud volume. value is 0 to 1"
+          />
+          </div>
+          <div className="flex flex-row w-full h-fit gap-3">
+          <Inputnumber
+          textName="protect"
+          textValue={formData.protect}
+          handleInput={handleInput}
+          max="0.5"
+          min="0"
+          step="0.01"
+          description="Protect voiceless consonants and breath sounds. Set to 0.5 to disable. Decrease the value to increase the protection but reduce indexing accuracy. value is 0 to 0.5"
+          />
+          <Inputnumber
+          textName="filter_radius"
+          textValue={formData.filter_radius}
+          handleInput={handleInput}
+          max="7"
+          min="0"
+          step="1"
+          description="The value represents the filter radius and can reduce breathiness. value is 0 to 7"
+          />
+          <Inputnumber
+          textName="index_rate"
+          textValue={formData.index_rate}
+          handleInput={handleInput}
+          max="1"
+          min="0"
+          step="0.01"
+          description="Controls accent strenght, too high will be artifacting. value is 0 to 1"
+          />
+          </div>
+          
             {errorMessage && <div className="text-red-500">{errorMessage}</div>}
             <input
               type="submit"

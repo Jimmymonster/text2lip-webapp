@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import ProgressBar from "@/components/Progressbar";
 
 function ResultPage() {
   const searchParams = useSearchParams();
@@ -15,6 +16,8 @@ function ResultPage() {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   // const videoRef = useRef<HTMLVideoElement>(null);
+
+  const [progressState,setProgressState] = useState<[number,number,string]>([1,6,'fetching task status']);
 
   useEffect(() => {
     const taskIdFromQuery = searchParams.get("task_id");
@@ -44,10 +47,27 @@ function ResultPage() {
       const result = await response.json();
       setStatus(result.status);
 
+      // update progress bar
+      if (result.status === "processing" || result.status === "string tokenizing"){
+        setProgressState([1,6,'string tokenizing']);
+      }
+      else if (result.status === "text to speech"){
+        setProgressState([2,6,'transfroming text to voice'])
+      }
+      else if (result.status === "concatenate voice"){
+        setProgressState([3,6,'colleting each voice sentence together'])
+      }
+      else if (result.status === "enhance voice"){
+        setProgressState([4,6,'enchancing voice with your input parameters'])
+      }
+      else if (result.status === "wav to lip"){
+        setProgressState([5,6,'transfroming voice and video to lip-sync video'])
+      }
+
       if (result.status === "finish") {
         fetchVideo(taskId);
         fetchVoice(taskId);
-      } else if (result.status === "processing") {
+      } else if (!result.status.includes("error")) {
         setTimeout(() => fetchTaskStatus(taskId), 10000); // Poll every 10 seconds
       }
       else{
@@ -215,7 +235,7 @@ function ResultPage() {
                   fill="white"
                 />
               </svg>
-              <p className="text-white text-lg mt-4">Loading...</p>
+              <ProgressBar nowStep={progressState[0]} maxStep={progressState[1]} description={progressState[2]}/>
             </div>
           )}
         </div>

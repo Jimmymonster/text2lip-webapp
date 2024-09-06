@@ -100,7 +100,7 @@ function Navbar() {
                             <Image src="/logo.png" width={188} height={144} alt="Text to lip logo" />
                         </Link>
                     </div>
-
+                    <ThemeToggle></ThemeToggle>
                 </div>
             </nav>
             {/* <div className="w-full h-16 z-50"></div> */}

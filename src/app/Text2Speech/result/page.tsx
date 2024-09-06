@@ -1,13 +1,18 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
+import ProgressBar from "@/components/Progressbar";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
-
+interface TextItem {
+  text: string;
+  timestamp: string;  // or number if you prefer converting it earlier
+}
 function ResultPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [textData, setTextData] = useState<TextItem[]>([]);
   const [taskId, setTaskId] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -18,6 +23,8 @@ function ResultPage() {
     { currentTime: 0, duration: 0 }
   );
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  const [progressState,setProgressState] = useState<[number,number,string]>([0,4,'fetching task status']);
 
   useEffect(() => {
     const taskIdFromQuery = searchParams.get("task_id");
@@ -54,9 +61,24 @@ function ResultPage() {
       const result = await response.json();
       setStatus(result.status);
 
+      // update progress bar
+      if (result.status === "processing" || result.status === "string tokenizing"){
+        setProgressState([0,4,'string tokenizing']);
+      }
+      else if (result.status === "text to speech"){
+        setProgressState([1,4,'transfroming text to voice'])
+      }
+      else if (result.status === "concatenate voice"){
+        setProgressState([2,4,'colleting each voice sentence together'])
+      }
+      else if (result.status === "enhance voice"){
+        setProgressState([3,4,'enchancing voice with your input parameters'])
+      }
+
       if (result.status === "finish") {
         fetchAudio(taskId);
-      } else if (result.status === "processing") {
+        fetchText(taskId);
+      } else if (!result.status.includes("error")) {
         setTimeout(() => fetchTaskStatus(taskId), 2000); // Poll every 2 seconds
       }
       else{
@@ -105,6 +127,22 @@ function ResultPage() {
       return () => URL.revokeObjectURL(audioUrl);
     } catch (error) {
       setErrorMessage("Failed to fetch audio. Please try again.");
+    }
+  };
+
+  const fetchText = async(taskId: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip/get_text_token?task_id=${taskId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch text");
+      }
+       // Parse the JSON response
+      const textWithTimestamps = await response.json();
+      setTextData(textWithTimestamps);
+    } catch (error) {
+      setErrorMessage("Failed to fetch text. Please try again.");
     }
   };
 
@@ -207,6 +245,18 @@ function ResultPage() {
                   </svg>
                 )}
               </div>
+              <ul>
+        {textData.map((item, index) => {
+          const timestamp = parseFloat(item.timestamp);  // Convert timestamp to number
+          const isActive = timer.currentTime >= timestamp;  // Check if current time passed timestamp
+
+          return (
+            <li key={index} style={{ color: isActive ? "red" : "black" }}>
+              {item.text}
+            </li>
+          );
+        })}
+      </ul>
               <div className="flex flex-row justify-evenly w-full h-16">
                 <div
                   onClick={handleDownloadAudio}
@@ -238,7 +288,7 @@ function ResultPage() {
                   fill="white"
                 />
               </svg>
-              <p className="text-white text-lg mt-4">Loading...</p>
+              <ProgressBar nowStep={progressState[0]} maxStep={progressState[1]} description={progressState[2]}/>
             </div>
           )}
         </div>
