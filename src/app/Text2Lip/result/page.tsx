@@ -5,19 +5,24 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import ProgressBar from "@/components/Progressbar";
-
+interface TextItem {
+  text: string;
+  timestamp: string;  // or number if you prefer converting it earlier
+}
 function ResultPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [textData, setTextData] = useState<TextItem[]>([]);
   const [taskId, setTaskId] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  // const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [currentTime, setCurrentTime] = useState(0);
 
-  const [progressState,setProgressState] = useState<[number,number,string]>([1,6,'fetching task status']);
+  const [progressState,setProgressState] = useState<[number,number,string]>([0,6,'Fetching task status']);
 
   useEffect(() => {
     const taskIdFromQuery = searchParams.get("task_id");
@@ -31,6 +36,16 @@ function ResultPage() {
     setTaskId(taskIdFromQuery);
     fetchTaskStatus(taskIdFromQuery);
   }, [searchParams, router]);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+
+      video.addEventListener("timeupdate", handleTimeUpdate);
+      return () => video.removeEventListener("timeupdate", handleTimeUpdate);
+    }
+  }, [videoUrl]);
 
   const fetchTaskStatus = async (taskId: string) => {
     setIsLoading(true);
@@ -49,24 +64,25 @@ function ResultPage() {
 
       // update progress bar
       if (result.status === "processing" || result.status === "string tokenizing"){
-        setProgressState([1,6,'string tokenizing']);
+        setProgressState([1,6,'String tokenizing']);
       }
       else if (result.status === "text to speech"){
-        setProgressState([2,6,'transfroming text to voice'])
+        setProgressState([2,6,'Transfroming text to voice'])
       }
       else if (result.status === "concatenate voice"){
-        setProgressState([3,6,'colleting each voice sentence together'])
+        setProgressState([3,6,'Colleting each voice sentence together'])
       }
       else if (result.status === "enhance voice"){
-        setProgressState([4,6,'enchancing voice with your input parameters'])
+        setProgressState([4,6,'Enchancing voice with your input parameters'])
       }
       else if (result.status === "wav to lip"){
-        setProgressState([5,6,'transfroming voice and video to lip-sync video'])
+        setProgressState([5,6,'Transfroming voice and video to lip-sync video'])
       }
 
       if (result.status === "finish") {
         fetchVideo(taskId);
         fetchVoice(taskId);
+        fetchText(taskId);
       } else if (!result.status.includes("error")) {
         setTimeout(() => fetchTaskStatus(taskId), 10000); // Poll every 10 seconds
       }
@@ -129,6 +145,22 @@ function ResultPage() {
     }
   };
 
+  const fetchText = async(taskId: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip/get_text_token?task_id=${taskId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch text");
+      }
+       // Parse the JSON response
+      const textWithTimestamps = await response.json();
+      setTextData(textWithTimestamps);
+    } catch (error) {
+      setErrorMessage("Failed to fetch text. Please try again.");
+    }
+  };
+
   const handleDownloadVideo = () => {
     if (videoUrl) {
       const link = document.createElement("a");
@@ -154,7 +186,7 @@ function ResultPage() {
   return (
     <div>
       <Navbar />
-      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-96">
+      <div className="flex justify-center items-center w-full h-fit min-h-96 py-6">
         <div className="flex flex-col w-[80%] h-[80%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-3">
           {isLoading ? (
             <div className="flex flex-col w-[80%] h-[80%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
@@ -192,12 +224,23 @@ function ResultPage() {
               <div className="flex flex-col w-full h-full min-h-72">
                 <video
                   controls
-                  // ref={videoRef}
+                  ref={videoRef}
                   src={videoUrl}
                   className="w-full h-full rounded-xl"
                 />
               </div>
+              <div className="w-full h-fit min-h-fit bg-[color:var(--bg-box-col)] p-2 rounded-xl">
+  {textData.map((item, index) => {
+    const timestamp = parseFloat(item.timestamp);  // Convert timestamp to number
+    const isActive = currentTime >= timestamp;  // Check if current time passed timestamp
 
+    return (
+      <div key={index} className={ isActive ? "inline text-[color:var(--text-color-1)]" : "inline text-[color:var(--text-color-2)]" }>
+        {item.text+" "}
+      </div>
+    );
+  })}
+</div>
               <div className="flex flex-row justify-evenly w-full h-16">
                 <button
                   onClick={handleDownloadVoice}

@@ -24,7 +24,7 @@ function ResultPage() {
   );
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const [progressState,setProgressState] = useState<[number,number,string]>([0,4,'fetching task status']);
+  const [progressState,setProgressState] = useState<[number,number,string]>([0,4,'Fetching task status']);
 
   useEffect(() => {
     const taskIdFromQuery = searchParams.get("task_id");
@@ -63,16 +63,16 @@ function ResultPage() {
 
       // update progress bar
       if (result.status === "processing" || result.status === "string tokenizing"){
-        setProgressState([0,4,'string tokenizing']);
+        setProgressState([0,4,'String tokenizing']);
       }
       else if (result.status === "text to speech"){
-        setProgressState([1,4,'transfroming text to voice'])
+        setProgressState([1,4,'Transfroming text to voice'])
       }
       else if (result.status === "concatenate voice"){
-        setProgressState([2,4,'colleting each voice sentence together'])
+        setProgressState([2,4,'Colleting each voice sentence together'])
       }
       else if (result.status === "enhance voice"){
-        setProgressState([3,4,'enchancing voice with your input parameters'])
+        setProgressState([3,4,'Enchancing voice with your input parameters'])
       }
 
       if (result.status === "finish") {
@@ -171,12 +171,18 @@ function ResultPage() {
       document.body.removeChild(link);
     }
   };
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (audio) {
+      audio.currentTime = parseFloat(e.target.value);
+      setTimer({ ...timer, currentTime: audio.currentTime });
+    }
+  };
 
   return (
     <div>
       <Navbar />
-      <div className="flex justify-center items-center w-full h-[calc(100vh-4rem)] min-h-96">
-        <div className="flex flex-col w-[80%] h-[80%] min-h-96 justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
+      <div className="flex justify-center items-center w-full h-fit min-h-96 py-6">
+        <div className="flex flex-col w-[80%] h-fit min-h-fit justify-center items-center bg-[color:var(--palette2)] rounded-xl px-4 py-4 gap-10">
           {status === "error" ? (
             <div className="flex flex-col justify-center items-center">
               <p className="text-red-500 text-lg">{errorMessage}</p>
@@ -245,18 +251,28 @@ function ResultPage() {
                   </svg>
                 )}
               </div>
-              <ul>
-        {textData.map((item, index) => {
-          const timestamp = parseFloat(item.timestamp);  // Convert timestamp to number
-          const isActive = timer.currentTime >= timestamp;  // Check if current time passed timestamp
+              <input
+                type="range"
+                min="0"
+                max={timer.duration.toString()}
+                value={timer.currentTime.toString()}
+                step="0.1"
+                onChange={handleSeek}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="w-full h-fit min-h-fit bg-[color:var(--bg-box-col)] p-2 rounded-xl">
+  {textData.map((item, index) => {
+    const timestamp = parseFloat(item.timestamp);  // Convert timestamp to number
+    const isActive = timer.currentTime >= timestamp;  // Check if current time passed timestamp
 
-          return (
-            <li key={index} style={{ color: isActive ? "red" : "black" }}>
-              {item.text}
-            </li>
-          );
-        })}
-      </ul>
+    return (
+      <div key={index} className={ isActive ? "inline text-[color:var(--text-color-1)]" : "inline text-[color:var(--text-color-2)]" }>
+        {item.text+" "}
+      </div>
+    );
+  })}
+</div>
+        
               <div className="flex flex-row justify-evenly w-full h-16">
                 <div
                   onClick={handleDownloadAudio}

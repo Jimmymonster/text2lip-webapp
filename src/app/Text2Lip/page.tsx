@@ -27,7 +27,7 @@ function Text2Lip() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // State for error message
 
-  const [progressState,setProgressState] = useState<[number,number,string]>([0,6,'uploading your text and video input to server']);
+  const [progressState,setProgressState] = useState<[number,number,string]>([0,6,'Uploading your text and video input to server']);
 
   const handleFileChange = (file: File | null) => {
     setVideoFile(file); // Update the state with the selected file
