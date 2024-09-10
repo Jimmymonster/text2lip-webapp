@@ -62,7 +62,10 @@ function ResultPage() {
       setStatus(result.status);
 
       // update progress bar
-      if (result.status === "processing" || result.status === "string tokenizing"){
+      if (result.status === "pending"){
+        setProgressState([0,4,'Your task is waiting in queue.']);
+      }
+      else if (result.status === "processing" || result.status === "string tokenizing"){
         setProgressState([0,4,'String tokenizing']);
       }
       else if (result.status === "text to speech"){
