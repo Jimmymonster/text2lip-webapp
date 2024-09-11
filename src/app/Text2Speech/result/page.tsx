@@ -23,6 +23,7 @@ function ResultPage() {
     { currentTime: 0, duration: 0 }
   );
   const audioRef = useRef<HTMLAudioElement>(null);
+  const firstFetchRef = useRef<boolean>(false);
 
   const [progressState,setProgressState] = useState<[number,number,string]>([0,4,'Fetching task status']);
 
@@ -38,6 +39,7 @@ function ResultPage() {
     setTaskId(taskIdFromQuery);
     fetchTaskStatus(taskIdFromQuery);
   }, [searchParams, router]);
+  
   useEffect(() => {
     return () => {
       if(audio){
@@ -50,49 +52,63 @@ function ResultPage() {
     setIsLoading(true);
     setErrorMessage(null);
 
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip/status?task_id=${taskId}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+    if (!firstFetchRef.current) { // Check the useRef value
+      firstFetchRef.current = true;
+      try {
+        const result = await fetchAudio(taskId); // Fetch the audio first
+        await fetchText(taskId);
+        setIsLoading(false);
+        setStatus("finish");
+        return; // Exit early if the audio fetch works
+      } catch (error) {
+        setTimeout(() => fetchTaskStatus(taskId), 2000); 
       }
-
-      const result = await response.json();
-      setStatus(result.status);
-
-      // update progress bar
-      if (result.status === "pending"){
-        setProgressState([0,4,'Your task is waiting in queue.']);
-      }
-      else if (result.status === "processing" || result.status === "string tokenizing"){
-        setProgressState([0,4,'String tokenizing']);
-      }
-      else if (result.status === "text to speech"){
-        setProgressState([1,4,'Transfroming text to voice'])
-      }
-      else if (result.status === "concatenate voice"){
-        setProgressState([2,4,'Colleting each voice sentence together'])
-      }
-      else if (result.status === "enhance voice"){
-        setProgressState([3,4,'Enchancing voice with your input parameters'])
-      }
-
-      if (result.status === "finish") {
-        fetchAudio(taskId);
-        fetchText(taskId);
-      } else if (!result.status.includes("error")) {
-        setTimeout(() => fetchTaskStatus(taskId), 2000); // Poll every 2 seconds
-      }
-      else{
+    }
+    else{
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip/status?task_id=${taskId}`
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+  
+        const result = await response.json();
+        setStatus(result.status);
+  
+        // update progress bar
+        if (result.status === "pending"){
+          setProgressState([0,4,'Your task is waiting in queue.']);
+        }
+        else if (result.status === "processing" || result.status === "string tokenizing"){
+          setProgressState([0,4,'String tokenizing']);
+        }
+        else if (result.status === "text to speech"){
+          setProgressState([1,4,'Transfroming text to voice'])
+        }
+        else if (result.status === "concatenate voice"){
+          setProgressState([2,4,'Colleting each voice sentence together'])
+        }
+        else if (result.status === "enhance voice"){
+          setProgressState([3,4,'Enchancing voice with your input parameters'])
+        }
+  
+        if (result.status === "finish") {
+          fetchAudio(taskId);
+          fetchText(taskId);
+        } else if (!result.status.includes("error")) {
+          setTimeout(() => fetchTaskStatus(taskId), 2000); // Poll every 2 seconds
+        }
+        else{
+          setStatus("error");
+          setErrorMessage("Error on Server side. Please try again.");
+        }
+      } catch (error) {
         setStatus("error");
-        setErrorMessage("Error on Server side. Please try again.");
+        setErrorMessage("Something went wrong. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      setStatus("error");
-      setErrorMessage("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -130,6 +146,7 @@ function ResultPage() {
       return () => URL.revokeObjectURL(audioUrl);
     } catch (error) {
       setErrorMessage("Failed to fetch audio. Please try again.");
+      throw new Error("Failed to fetch audio");
     }
   };
 
