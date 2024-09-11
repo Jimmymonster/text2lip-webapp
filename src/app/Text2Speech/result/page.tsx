@@ -55,7 +55,7 @@ function ResultPage() {
     if (!firstFetchRef.current) { // Check the useRef value
       firstFetchRef.current = true;
       try {
-        const result = await fetchAudio(taskId); // Fetch the audio first
+        await fetchAudio(taskId); // Fetch the audio first
         await fetchText(taskId);
         setIsLoading(false);
         setStatus("finish");

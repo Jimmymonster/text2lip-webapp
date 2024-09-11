@@ -42,6 +42,7 @@ function ResultPage() {
   }, [searchParams, router]);
 
   useEffect(() => {
+    console.log(videoRef,videoUrl)
     if (videoRef.current) {
       const video = videoRef.current;
       const handleTimeUpdate = () => setCurrentTime(video.currentTime);
@@ -51,15 +52,17 @@ function ResultPage() {
     }
   }, [videoUrl]);
 
+
+
   const fetchTaskStatus = async (taskId: string) => {
     setIsLoading(true);
     setErrorMessage(null);
     if (!firstFetchRef.current) { // Check the useRef value
       firstFetchRef.current = true;
       try {
-        const result = await fetchVideo(taskId); // Fetch the audio first
-        await fetchText(taskId);
-        await fetchVoice(taskId)
+        await fetchVideo(taskId); // Fetch the video first
+        fetchVoice(taskId);
+        fetchText(taskId);
         setIsLoading(false);
         setStatus("finish");
         return; // Exit early if the audio fetch works
@@ -244,8 +247,8 @@ function ResultPage() {
               <div className="flex flex-col w-full h-full min-h-72">
                 <video
                   controls
-                  ref={videoRef}
                   src={videoUrl}
+                  ref={videoRef}
                   className="w-full h-full rounded-xl"
                 />
               </div>
