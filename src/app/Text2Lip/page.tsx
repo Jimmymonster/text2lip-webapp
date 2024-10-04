@@ -136,7 +136,7 @@ function Text2Lip() {
             onSubmit={onSubmit}
           >
             <div className="flex flex-row w-full h-full min-h-fit gap-3">
-              <div className="flex flex-col w-full h-full min-h-fit justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
+              <div className="flex flex-col w-full h-full justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
                 <Textbox
                   textName="textinput"
                   textValue={formData.textinput}
@@ -157,7 +157,7 @@ function Text2Lip() {
                 
                 
               </div>
-              <div className="flex flex-col w-full h-full min-h-fit justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
+              <div className="flex flex-col w-full h-full justify-center items-center bg-[color:var(--palette2)] rounded-xl gap-3">
                { formData.video==="Video: Default"?(<Image
         src="/default_video.png"
         alt="default video image for text to lip inference"
