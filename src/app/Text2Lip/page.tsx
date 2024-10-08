@@ -148,8 +148,6 @@ function Text2Lip() {
                   value={formData.voice}
                   dropdownList={[
                     "Voice: Reporter A",
-                    "Voice: Reporter B",
-                    "Voice: Reporter C",
                   ]}
                   handleInput={handleInput}
                 />

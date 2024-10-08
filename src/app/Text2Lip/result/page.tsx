@@ -13,6 +13,7 @@ function ResultPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [textData, setTextData] = useState<TextItem[]>([]);
+  const [creationTime, setCreationTime] = useState<string>("");
   const [taskId, setTaskId] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -42,7 +43,7 @@ function ResultPage() {
   }, [searchParams, router]);
 
   useEffect(() => {
-    console.log(videoRef,videoUrl)
+    // console.log(videoRef,videoUrl)
     if (videoRef.current) {
       const video = videoRef.current;
       const handleTimeUpdate = () => setCurrentTime(video.currentTime);
@@ -76,7 +77,8 @@ function ResultPage() {
           `${process.env.NEXT_PUBLIC_API_URL}/api/text2lip/status?task_id=${taskId}`
         );
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          const errorMessage = await response.json().then((data) => data.message || JSON.stringify(data));
+          throw new Error(errorMessage);
         }
   
         const result = await response.json();
@@ -118,9 +120,26 @@ function ResultPage() {
             setErrorMessage("Something went wrong. Please try again.");
           }
         }
-      } catch (error) {
+      } catch (error: any) {
+        // Set status to error
         setStatus("error");
-        setErrorMessage("Something went wrong. Please try again.");
+        if (error.message?.includes('ERR_CONNECTION_REFUSED')) {
+          // Handle network error
+          setErrorMessage('Network Error: Connection refused. Please check the server.');
+        } else if (error instanceof Error) {
+          try {
+            // Parse the error message as JSON
+            const errorData = JSON.parse(error.message);
+            // Set error message with the `detail` field
+            setErrorMessage('Error: ' + errorData.detail);
+          } catch (e) {
+            // If JSON parsing fails, show the raw error message
+            setErrorMessage('Error: ' + error.message);
+          }
+        } else {
+          // Set a generic error message if the error is not an instance of Error
+          setErrorMessage("Something went wrong. Please try again.");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -180,7 +199,8 @@ function ResultPage() {
       }
        // Parse the JSON response
       const textWithTimestamps = await response.json();
-      setTextData(textWithTimestamps);
+      setTextData(textWithTimestamps["text_with_timestamps"]);
+      setCreationTime(textWithTimestamps["creation_time"]);
     } catch (error) {
       setErrorMessage("Failed to fetch text. Please try again.");
     }
@@ -263,6 +283,9 @@ function ResultPage() {
       </div>
     );
   })}
+  <div className="flex w-full items-center justify-center py-4">{creationTime && (
+      <p className="text-[color:var(--text-color-1)] font-extrabold">คลิปวิดีโอนี้ถูกสร้างเมื่อ {new Date(creationTime).toLocaleString()}</p>
+    )}</div>
 </div>
               <div className="flex flex-row justify-evenly w-full h-16">
                 <button
